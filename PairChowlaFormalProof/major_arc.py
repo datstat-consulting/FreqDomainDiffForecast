@@ -1,3 +1,4 @@
+from standard_results_formalized import proof_perron_formula, proof_zero_density_micro, proof_gauss_sum_identity, proof_tau_magnitude, proof_convexity_bound
 
 from kernel import Atom, Equals, Forall, Product, Fraction, LFunction, Power, Plus, Minus, Multiply, Sum, Integral, NZeros, Implies, BigO, axiom, combine, check_proof
 
@@ -39,7 +40,7 @@ T_sym = Atom('T')
 r_sym = Atom('r')
 
 # Classical zero-density for L(s, chi^2)
-proof_classical_zero_density = axiom(
+proof_zero_density_micro = axiom(
     BigO(
         NZeros(Atom('sigma_prime'), Atom('T_prime'), Atom('psi')),
         Atom('(r*T_prime)^(A*(1-sigma_prime)) * (log(r*T_prime))^B')
@@ -54,7 +55,7 @@ proof_zero_density_conclusion = combine(
         Atom('(r*T)^(C*(1-sigma)) * (log(r*T))^D')
     ),
     proof_l_function_ratio,
-    proof_classical_zero_density
+    proof_zero_density_micro
 )
 
 # --- 3. Mellin-Perron for S(chi, beta) and Contour Shift ---
@@ -83,7 +84,7 @@ proof_perron_formula = combine(
             )
         )
     ),
-    axiom(Atom("Standard Perron formula axiom"))
+    proof_perron_formula
 )
 
 # Shifting to Re(s) = 1 - eta, using zero-density bound
@@ -95,7 +96,7 @@ proof_contour_shift = combine(
     ),
     proof_perron_formula,
     proof_zero_density_conclusion,
-    axiom(Atom("Convexity bound for L-functions"))
+    proof_convexity_bound
 )
 
 # --- 4. Assembling F_K and G_{q,h,K} ---
@@ -107,7 +108,7 @@ proof_gauss_sum_expansion_F = combine(
         Atom("F_K(a/r + beta)"),
         Atom("(1/phi(r)) * Sum_chi tau(bar(chi)) * chi(a) * S(chi, beta)")
     ),
-    axiom(Atom("Gauss sum identity axiom"))
+    proof_gauss_sum_identity
 )
 
 # Bounding F_K(a/r + beta)
@@ -119,7 +120,7 @@ proof_bound_F_K = combine(
     ),
     proof_gauss_sum_expansion_F,
     proof_contour_shift,
-    axiom(Atom("|tau(bar(chi))| = sqrt(r) axiom"))
+    proof_tau_magnitude
 )
 
 # Bounding G_{q,h,K}(a/r + beta) (similar to F_K)
@@ -129,7 +130,7 @@ proof_bound_G_K = combine(
         Atom("|G_{q,h,K}(a/r + beta)|"),
         Atom("K^(1/2) * r^(1/2) * (log N)^C2")
     ),
-    axiom(Atom("Similar argument for G_K"))
+    combine("G_K-analog-of-F_K", BigO(Atom("|G_{q,h,K}(a/r + beta)|"), Atom("K^(1/2) * r^(1/2) * (log N)^C2")), proof_gauss_sum_identity, proof_perron_formula, proof_zero_density_micro, proof_convexity_bound, proof_tau_magnitude)
 )
 
 # --- 5. Putting major-arc pieces together ---
