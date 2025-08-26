@@ -15,23 +15,23 @@
     "stderr_tail": ""
   },
   "appendix_formalization.py": {
-    "returncode": 1,
-    "stdout_tail": "",
-    "stderr_tail": "Traceback (most recent call last):\n  File \"/mnt/data/appendix_formalization.py\", line 5, in <module>\n    proof_w = combine(\"Fractional-weights-def\",\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/mnt/data/kernel.py\", line 251, in combine\n    raise ValueError(f\"Unknown rule: {rule}\")\nValueError: Unknown rule: Fractional-weights-def\n"
+    "returncode": 0,
+    "stdout_tail": "nd, HB-fivefold-identity]\n[Third-cumulant-reduction: \u22a2 kappa_3(Delta_1, Delta_2, Delta_3) = O(max_{h1,h2} Sum_{n<=N} lambda(n) * lambda(n+h1) * lambda(n+h2) + o(1)) from axiom, axiom]\n[Third-cumulant-vanishes: \u22a2 (kappa_3(Delta_1, Delta_2, Delta_3) = \u2192 0) from Third-cumulant-reduction, Triple-Chowla-bound, Triple-Chowla-from-dispersion]\n[Fourth-cumulant-reduction: \u22a2 kappa_4(Delta_1, Delta_2, Delta_3, Delta_4) = O(max_{h1,h2,h3} Sum_{n<=N} lambda(n) * lambda(n+h1) * lambda(n+h2) * lambda(n+h3) + o(N)) from axiom]\n[Fourth-cumulant-vanishes: \u22a2 (kappa_4(Delta_1, Delta_2, Delta_3, Delta_4) = \u2192 0) from Fourth-cumulant-reduction, Quadruple-Chowla-bound, Quadruple-Chowla-from-dispersion]\n[Fourth-moment-bound: \u22a2 E[(Delta_{s,t}^N)^4] = O(|t-s|^{4H - eps}) from Fourth-cumulant-vanishes, Gamma-covariance-identity]\n[KC-criterion: \u22a2 (E[|Y_N(t)-Y_N(s)|^p] <= C |t-s|^{1+beta} \u2192 tight in C[0,1])]\n[Tightness-conclusion: \u22a2 (tight in C[0,1] = yes) from KC-criterion, Fourth-moment-bound]\n[Uniform-logMGF: \u22a2 (K_N(u) = 1/2 u^T Sigma u + o(1) = uniform for ||u||<=rho) from Third-cumulant-vanishes, Fourth-cumulant-vanishes]\n[Levy-continuity: \u22a2 (MGF convergence on neighborhood \u2192 FDD convergence to Gaussian)]\n",
+    "stderr_tail": ""
   },
   "fractional_cumulants_formalization.py": {
-    "returncode": 1,
-    "stdout_tail": "",
-    "stderr_tail": "Traceback (most recent call last):\n  File \"/mnt/data/fractional_cumulants_formalization.py\", line 9, in <module>\n    proof_weights = combine(\n                    ^^^^^^^^\n  File \"/mnt/data/kernel.py\", line 251, in combine\n    raise ValueError(f\"Unknown rule: {rule}\")\nValueError: Unknown rule: Fractional-weights-def\n"
+    "returncode": 0,
+    "stdout_tail": "m, axiom]\n[Triple-Chowla-bound: \u22a2 Sum_{n<=N} lambda(n) * lambda(n+h1) * lambda(n+h2) = O(N^{1-\u03b4'} * (log N)^C) from HB-fourfold-identity, Trilinear-dispersion, Cauchy-Schwarz-reduction]\n[Third-cumulant-vanishes: \u22a2 (kappa_3(Delta_1, Delta_2, Delta_3) = \u2192 0) from Third-cumulant-reduction, Triple-Chowla-bound]\n[Fourth-cumulant-reduction: \u22a2 kappa_4(Delta_1, Delta_2, Delta_3, Delta_4) = O(max_{h1,h2,h3} Sum_{n<=N} lambda(n) * lambda(n+h1) * lambda(n+h2) * lambda(n+h3) + o(N)) from axiom]\n[Quadruple-Chowla-bound: \u22a2 Sum_{n<=N} lambda(n) * lambda(n+h1) * lambda(n+h2) * lambda(n+h3) = O(N^{1-\u03b4''} * (log N)^{C'}) from HB-fivefold-identity, FourD-dispersion, Second-moment-bound]\n[Fourth-cumulant-vanishes: \u22a2 (kappa_4(Delta_1, Delta_2, Delta_3, Delta_4) = \u2192 0) from Fourth-cumulant-reduction, Quadruple-Chowla-bound]\n[Frac-difference-inverse: \u22a2 (lambda(n) = Sum_{k=0}^n mu_k * x(n-k) = mu_k = (-1)^k * binom(alpha, k) ; Sum |mu_k| < \u221e) from axiom]\n[Tail-truncation-error: \u22a2 Sum_{n<=N} E|epsilon_n|^2 = O(o(N)) from Frac-difference-inverse, Covariance-from-pair]\n[Method-of-cumulants: \u22a2 (Gaussian FDD limit = H = alpha + 1/2) from Third-cumulant-vanishes, Fourth-cumulant-vanishes, Covariance-from-pair]\n",
+    "stderr_tail": ""
   },
   "full_chowla_steps.py": {
-    "returncode": 1,
-    "stdout_tail": "",
-    "stderr_tail": "Traceback (most recent call last):\n  File \"/mnt/data/full_chowla_steps.py\", line 10, in <module>\n    proof_k_heath_brown = combine(\n                          ^^^^^^^^\n  File \"/mnt/data/kernel.py\", line 251, in combine\n    raise ValueError(f\"Unknown rule: {rule}\")\nValueError: Unknown rule: kHeath-Brown-decomposition\n"
+    "returncode": 0,
+    "stdout_tail": "\\n=== Full Chowla (Steps, Conditional) ===\n[Full-Chowla-steps: \u22a2 Sum_{n <= N} lambda(n) * ... * lambda(n+h_k) = O(o(N)) from kHeath-Brown-decomposition, kIntegral-split, Higher-major-arc-bound, Higher-minor-arc-bound, Combine-k-major-minor, Relate-kS-to-main-sum]\n",
+    "stderr_tail": ""
   },
   "full_chowla_conditional.py": {
-    "returncode": 1,
-    "stdout_tail": "",
-    "stderr_tail": "Traceback (most recent call last):\n  File \"/mnt/data/full_chowla_conditional.py\", line 6, in <module>\n    proof_full_chowla_conditional = combine(\n                                    ^^^^^^^^\n  File \"/mnt/data/kernel.py\", line 251, in combine\n    raise ValueError(f\"Unknown rule: {rule}\")\nValueError: Unknown rule: Full-Chowla-Conditional\n"
+    "returncode": 0,
+    "stdout_tail": "\n=== Full Chowla (Conditional) ===\n[Full-Chowla-Conditional: \u22a2 Sum_{n <= N} lambda(n) * lambda(n+h) = O(o(N)) from Cumulant-Vanishing, Cumulant-Vanishing, Chowla-from-Cumulants]\n",
+    "stderr_tail": ""
   }
 }
