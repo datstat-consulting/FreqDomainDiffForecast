@@ -42,7 +42,7 @@ proof_IE = combine("Inclusion-exclusion-reduction",
                    proof_emp_shift, proof_mobius)
 
 # Multilinear dispersion: bilinear base and r-variable induction → r=3,4 corollaries
-proof_bilin = combine("Bilinear-dispersion-HS",
+proof_bilin = combine("Bilinear-dispersion-HS-mapped",
                       BigO(Atom("Bilinear dispersion sum"),
                            Atom("X^{1/2} * (PQ)^{1/2} * d^{-δ} * (log X)^C")),
                       axiom(Atom("Harper–Shao 2023")))
