@@ -1,0 +1,37 @@
+{
+  "major_arc.py": {
+    "returncode": 0,
+    "stdout_tail": "-lambda: \u22a2 (L(s, chi \u2297 \u03bb) = \u03a0_{p|p is prime}((1 / (1 + chi(p)p^-s)))) from axiom, axiom]\n[L-function-ratio: \u22a2 (L(s, chi \u2297 \u03bb) = (L(2s, chi^2) / L(s, chi))) from Euler-product-L-lambda]\n[Zero-density-bound: \u22a2 N_{chi \u2297 \u03bb}(sigma, T) = O((r*T)^(C*(1-sigma)) * (log(r*T))^D) from L-function-ratio, axiom]\n[Perron-formula: \u22a2 (S(chi, beta) = (((1 / (2 * (pi * i))) * \u222b_{(c - (i * T))}^{(c + (i * T))} (L(s, chi \u2297 \u03bb) * ((K^s) / s)) ds) + (K = O(T) + K = O(|beta|)))) from axiom]\n[Contour-shift: \u22a2 S(chi, beta) = O(K^(1/2) * (log N)^C1) from Perron-formula, Zero-density-bound, axiom]\n[Gauss-sum-expansion: \u22a2 (F_K(a/r + beta) = (1/phi(r)) * Sum_chi tau(bar(chi)) * chi(a) * S(chi, beta)) from axiom]\n[Major-arc-integral-bound: \u22a2 |F_K(a/r + beta)| = O(K^(1/2) * r^(1/2) * (log N)^C1) from Gauss-sum-expansion, Contour-shift, axiom]\n[Major-arc-integral-bound: \u22a2 |G_{q,h,K}(a/r + beta)| = O(K^(1/2) * r^(1/2) * (log N)^C2) from axiom]\n[Major-arc-integral-bound: \u22a2 Integral over single major arc = O(Q * (log N)^C_prime) from Major-arc-integral-bound, Major-arc-integral-bound]\n[Major-arc-integral-bound: \u22a2 Integral over all major arcs = O(K^(1/2) * q^(-delta1) * (log N)^C1) from Major-arc-integral-bound, axiom]\n",
+    "stderr_tail": ""
+  },
+  "minor_arc.py": {
+    "returncode": 0,
+    "stdout_tail": "\n=== Minor Arc Formalization ===\n[axiom: \u22a2 (|Sum_{n=1}^K f(n) e(n*alpha)| >= epsilon * K \u2192 |Sum_{n=1}^K f(n) F(g(n))| >= delta(epsilon))]\n[U3-inverse-theorem: \u22a2 (sup_alpha_in_m |F_K(alpha)| >= epsilon0 * K \u2192 |Sum_{n=1}^K lambda(n) F(g(n))| >> K) from axiom]\n[Nilsequence-non-correlation: \u22a2 |Sum_{n=1}^K lambda(n) phi(n)| = O(K * (log K)^(-A)) from axiom, axiom]\n[Minor-arc-bound: \u22a2 Integral_m F_K(alpha) * G_{q,h,K}(alpha) dalpha = O(K^(1/2 - delta2) * (log N)^C2) from U3-inverse-theorem, Nilsequence-non-correlation, axiom]\n",
+    "stderr_tail": ""
+  },
+  "main_theorem.py": {
+    "returncode": 0,
+    "stdout_tail": "\n=== Main Theorem Formalization ===\n[axiom: \u22a2 (S_{q,h}(K) = (Integral_M F_K(alpha) * G_{q,h,K}(alpha) dalpha + Integral_m F_K(alpha) * G_{q,h,K}(alpha) dalpha))]\n[Combine-major-minor: \u22a2 S_{q,h}(K) = O(N^(3/4) * (log N)^C) from axiom, Major-arc-integral-bound, Minor-arc-bound]\n[Final-Chowla-unconditional: \u22a2 Sum_{n <= N-h} lambda(n) * lambda(n+h) = O(N^(3/4) * (log N)^C) from Combine-major-minor, axiom]\n",
+    "stderr_tail": ""
+  },
+  "appendix_formalization.py": {
+    "returncode": 1,
+    "stdout_tail": "",
+    "stderr_tail": "Traceback (most recent call last):\n  File \"/mnt/data/appendix_formalization.py\", line 5, in <module>\n    proof_w = combine(\"Fractional-weights-def\",\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/mnt/data/kernel.py\", line 251, in combine\n    raise ValueError(f\"Unknown rule: {rule}\")\nValueError: Unknown rule: Fractional-weights-def\n"
+  },
+  "fractional_cumulants_formalization.py": {
+    "returncode": 1,
+    "stdout_tail": "",
+    "stderr_tail": "Traceback (most recent call last):\n  File \"/mnt/data/fractional_cumulants_formalization.py\", line 9, in <module>\n    proof_weights = combine(\n                    ^^^^^^^^\n  File \"/mnt/data/kernel.py\", line 251, in combine\n    raise ValueError(f\"Unknown rule: {rule}\")\nValueError: Unknown rule: Fractional-weights-def\n"
+  },
+  "full_chowla_steps.py": {
+    "returncode": 1,
+    "stdout_tail": "",
+    "stderr_tail": "Traceback (most recent call last):\n  File \"/mnt/data/full_chowla_steps.py\", line 10, in <module>\n    proof_k_heath_brown = combine(\n                          ^^^^^^^^\n  File \"/mnt/data/kernel.py\", line 251, in combine\n    raise ValueError(f\"Unknown rule: {rule}\")\nValueError: Unknown rule: kHeath-Brown-decomposition\n"
+  },
+  "full_chowla_conditional.py": {
+    "returncode": 1,
+    "stdout_tail": "",
+    "stderr_tail": "Traceback (most recent call last):\n  File \"/mnt/data/full_chowla_conditional.py\", line 6, in <module>\n    proof_full_chowla_conditional = combine(\n                                    ^^^^^^^^\n  File \"/mnt/data/kernel.py\", line 251, in combine\n    raise ValueError(f\"Unknown rule: {rule}\")\nValueError: Unknown rule: Full-Chowla-Conditional\n"
+  }
+}

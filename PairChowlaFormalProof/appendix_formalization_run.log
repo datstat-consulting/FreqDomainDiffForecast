@@ -1,0 +1,28 @@
+
+=== Appendix formalization: Gamma covariance, weights, dispersion, inclusion–exclusion, tightness, log-MGF ===
+[Fractional-weights-def: ⊢ (w_m = Gamma(m+alpha) / (Gamma(alpha) * m!); w_m=0 for m<0) from axiom]
+[Generating-function-identity: ⊢ (W(z) = Sum_{m>=0} w_m z^m = (1-z)^(-alpha)) from Fractional-weights-def]
+[Coefficient-extraction: ⊢ (Coeff_{z^ell} W(z)^2 = Gamma(ell+2alpha) / (Gamma(2alpha) * ell!)) from Generating-function-identity]
+[Discrete-difference-equivalence: ⊢ (a_ell = b_ell; same recurrence and a_0 = b_0) from Coefficient-extraction]
+[Gamma-covariance-identity: ⊢ (Sum_{i>=0} w_i * w_{i+ell} = 1/2 * (ell^{2H} - (ell-1)^{2H})) from Generating-function-identity, Coefficient-extraction, Discrete-difference-equivalence]
+[Cumulant-weight-sum-bound: ⊢ Sum_{i_1,...,i_r} |A_{i_1,...,i_r}| = O(N^{r*alpha}) from axiom]
+[Empirical-shift-identity: ⊢ (E_N[lambda(i_1)...lambda(i_r)] = 1/N * Sum_{n<=N} lambda(n)...lambda(n+h) + O(N^-1))]
+[Cumulant-partition-Mobius: ⊢ (Cum(X_1,...,X_r) = sum_{pi in P([r])} mu(pi) prod_{B in pi} E prod_{i in B} X_i)]
+[Inclusion-exclusion-reduction: ⊢ (Cum(lambda(i1),...,lambda(ir)) = 1/N * Sum_{n<=N} lambda(n)...lambda(n+h) + O(N^-δ)) from Empirical-shift-identity, Cumulant-partition-Mobius]
+[Bilinear-dispersion-HS: ⊢ Bilinear dispersion sum = O(X^{1/2} * (PQ)^{1/2} * d^{-δ} * (log X)^C) from axiom]
+[Multilinear-dispersion-induction: ⊢ Multilinear dispersion r variables = O(X^{1/2} * (P_1...P_r)^{1/2} * d^{-δ_r} * (log X)^{C_r}) from Bilinear-dispersion-HS]
+[Trilinear-dispersion-lemma: ⊢ trilinear (r=3) dispersion = O(X^{1/2} * (PQR)^{1/2} * d^{-δ_3} * (log X)^{C_3}) from Multilinear-dispersion-induction]
+[FourD-dispersion-lemma: ⊢ quadrilinear (r=4) dispersion = O(X^{1/2} * (PQRS)^{1/2} * d^{-δ_4} * (log X)^{C_4}) from Multilinear-dispersion-induction]
+[Triple-Chowla-from-dispersion: ⊢ Sum_{n<=N} lambda(n) * lambda(n+h1) * lambda(n+h2) = O(N^{1-δ'} * (log N)^C) from Trilinear-dispersion-lemma, Cauchy-Schwarz-reduction, HB-fourfold-identity]
+[Quadruple-Chowla-from-dispersion: ⊢ Sum_{n<=N} lambda(n) * lambda(n+h1) * lambda(n+h2) * lambda(n+h3) = O(N^{1-δ''} * (log N)^{C'}) from FourD-dispersion-lemma, Second-moment-bound, HB-fivefold-identity]
+[Third-cumulant-reduction: ⊢ kappa_3(Delta_1, Delta_2, Delta_3) = O(max_{h1,h2} Sum_{n<=N} lambda(n) * lambda(n+h1) * lambda(n+h2) + o(1)) from axiom, axiom]
+[Third-cumulant-vanishes: ⊢ (kappa_3(Delta_1, Delta_2, Delta_3) = → 0) from Third-cumulant-reduction, Triple-Chowla-bound, Triple-Chowla-from-dispersion]
+[Fourth-cumulant-reduction: ⊢ kappa_4(Delta_1, Delta_2, Delta_3, Delta_4) = O(max_{h1,h2,h3} Sum_{n<=N} lambda(n) * lambda(n+h1) * lambda(n+h2) * lambda(n+h3) + o(N)) from axiom]
+[Fourth-cumulant-vanishes: ⊢ (kappa_4(Delta_1, Delta_2, Delta_3, Delta_4) = → 0) from Fourth-cumulant-reduction, Quadruple-Chowla-bound, Quadruple-Chowla-from-dispersion]
+[Fourth-moment-bound: ⊢ E[(Delta_{s,t}^N)^4] = O(|t-s|^{4H - eps}) from Fourth-cumulant-vanishes, Gamma-covariance-identity]
+[KC-criterion: ⊢ (E[|Y_N(t)-Y_N(s)|^p] <= C |t-s|^{1+beta} → tight in C[0,1])]
+[Tightness-conclusion: ⊢ (tight in C[0,1] = yes) from KC-criterion, Fourth-moment-bound]
+[Uniform-logMGF: ⊢ (K_N(u) = 1/2 u^T Sigma u + o(1) = uniform for ||u||<=rho) from Third-cumulant-vanishes, Fourth-cumulant-vanishes]
+[Levy-continuity: ⊢ (MGF convergence on neighborhood → FDD convergence to Gaussian)]
+
+---

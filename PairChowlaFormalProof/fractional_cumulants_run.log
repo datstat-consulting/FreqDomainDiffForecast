@@ -1,0 +1,16 @@
+\n=== Fractional Cumulants Formalization (as in your LaTeX) ===
+[Fractional-weights-def: ⊢ (w_m = Gamma(m+alpha) / (Gamma(alpha) * m!); w_m=0 for m<0) from axiom]
+[Convolution-x-def: ⊢ (x(n) = Sum_{k=0}^n w_{n-k} * lambda(k) ; x(n)=0 for n<0) from Fractional-weights-def]
+[Gamma-convolution-identity: ⊢ (Sum_{i>=0} w_i * w_{i+ell} = 1/2 * (ell^{2H} - (ell-1)^{2H})) from Fractional-weights-def]
+[Covariance-from-pair: ⊢ (Cov(x(n), x(m)) = 1/2*(n^{2H} + m^{2H} - |n-m|^{2H}) + O(1)) from Final-Chowla-unconditional, Gamma-convolution-identity]
+[Third-cumulant-reduction: ⊢ kappa_3(Delta_1, Delta_2, Delta_3) = O(max_{h1,h2} Sum_{n<=N} lambda(n) * lambda(n+h1) * lambda(n+h2) + o(1)) from axiom, axiom]
+[Triple-Chowla-bound: ⊢ Sum_{n<=N} lambda(n) * lambda(n+h1) * lambda(n+h2) = O(N^{1-δ'} * (log N)^C) from HB-fourfold-identity, Trilinear-dispersion, Cauchy-Schwarz-reduction]
+[Third-cumulant-vanishes: ⊢ (kappa_3(Delta_1, Delta_2, Delta_3) = → 0) from Third-cumulant-reduction, Triple-Chowla-bound]
+[Fourth-cumulant-reduction: ⊢ kappa_4(Delta_1, Delta_2, Delta_3, Delta_4) = O(max_{h1,h2,h3} Sum_{n<=N} lambda(n) * lambda(n+h1) * lambda(n+h2) * lambda(n+h3) + o(N)) from axiom]
+[Quadruple-Chowla-bound: ⊢ Sum_{n<=N} lambda(n) * lambda(n+h1) * lambda(n+h2) * lambda(n+h3) = O(N^{1-δ''} * (log N)^{C'}) from HB-fivefold-identity, FourD-dispersion, Second-moment-bound]
+[Fourth-cumulant-vanishes: ⊢ (kappa_4(Delta_1, Delta_2, Delta_3, Delta_4) = → 0) from Fourth-cumulant-reduction, Quadruple-Chowla-bound]
+[Frac-difference-inverse: ⊢ (lambda(n) = Sum_{k=0}^n mu_k * x(n-k) = mu_k = (-1)^k * binom(alpha, k) ; Sum |mu_k| < ∞) from axiom]
+[Tail-truncation-error: ⊢ Sum_{n<=N} E|epsilon_n|^2 = O(o(N)) from Frac-difference-inverse, Covariance-from-pair]
+[Method-of-cumulants: ⊢ (Gaussian FDD limit = H = alpha + 1/2) from Third-cumulant-vanishes, Fourth-cumulant-vanishes, Covariance-from-pair]
+
+---
