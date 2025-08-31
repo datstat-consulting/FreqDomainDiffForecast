@@ -4,7 +4,7 @@
 
 from kernel import Atom, Sum, BigO, Equals, axiom, combine, check_proof
 
-# 1. Bilinear large‐sieve lemma (Montgomery–Vaughan)
+# 1. Bilinear large‐sieve lemma (Montgomery–Vaughan) as an axiom
 proof_bs = axiom(
     BigO(
         Sum(
@@ -18,35 +18,40 @@ proof_bs = axiom(
     )
 )
 
-# 2. Apply it to the off‐diagonal sum
+# Side condition for bilinear sieve
+proof_side = axiom(Atom("P*Q ≤ x^(1-ε)"))
+
+# 2. Apply bilinear sieve to the off-diagonal dispersion sum
 proof_bs_apply = combine(
     "Bilinear-sieve-apply",
     BigO(
         Atom("Σ_{a=M1..2M1} Σ_{b=M2..2M2} Σ_{m1≠m2} e(r*a*b*(m1−m2)/D)"),
         Atom("x^(1/2)*(M1*M2)^(1/2)*(log x)^A * K")
     ),
-    proof_bs
+    proof_bs,
+    proof_side
 )
 
-# 3. Cauchy–Schwarz inference
+# 3. Cauchy–Schwarz to get N^(3/4)*(log N)^C for a dyadic block
 proof_cs = combine(
     "Cauchy-Schwarz",
     BigO(
-        Atom("Σ_{a=M1..2M1} Σ_{b=M2..2M2} |A_{a,b}|"),
+        Atom("Σ_{a∼M1} Σ_{b∼M2} A_{a,b}"),
         Atom("N^(3/4)*(log N)^C")
     ),
     proof_bs_apply
 )
 
-# 4. Count dyadic blocks: O((log N)^2)
-proof_dyadic = axiom(
+# 4. Dyadic counting over (M1,M2) blocks
+proof_dyadic = combine(
+    "Dyadic-count",
     Equals(
-        Atom("#dyadic_pairs"),
+        Atom("#dyadic blocks"),
         Atom("O((log N)^2)")
     )
 )
 
-# 5. Sum over dyadic blocks
+# 5. Final dyadic sum bound
 proof_sum_dyadic = combine(
     "Sum-dyadic",
     BigO(

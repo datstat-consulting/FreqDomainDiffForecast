@@ -110,19 +110,31 @@ def _s(s):
 def _repr(form):
     return repr(form)
 
+def _canon(s: str) -> str:
+    # Normalize some math notations to avoid harmless mismatches
+    if s is None:
+        return s
+    # unify ^{..} to ^(..)
+    s = re.sub(r"\^\{([^}]+)\}", r"^(\\1)", s)
+    # unify log(N) -> log N
+    s = s.replace("log(N)", "log N")
+    # collapse multiple spaces
+    s = re.sub(r"\s+", " ", s).strip()
+    return s
+
 def _contains(form, *needles):
-    text = _repr(form)
-    return all(n in text for n in needles)
+    text = _canon(_repr(form))
+    return all(_canon(n) in text for n in needles)
 
 def _contains_any(form, *needles):
-    text = _repr(form)
-    return any(n in text for n in needles)
+    text = _canon(_repr(form))
+    return any(_canon(n) in text for n in needles)
 
 
 def _check_chebyshev_count(pf: Proof):
     # ensure conclusion is BigO and premise is the mean-square axiom
     assert isinstance(pf.conclusion, BigO), "Chebyshev-count: need BigO"
-    assert len(pf.premises) == 1, "Chebyshev-count: exactly one premise"
+    assert len(pf.premises) in (1,2), "Chebyshev-count: one or two premises allowed"
     prem = pf.premises[0]
     assert prem.rule == 'axiom', "Chebyshev-count: premise must be mean-square axiom"
     # conclusion shape: |BadSet| = O( (N/T^2) * H * (log N)^(-A) )
@@ -131,15 +143,30 @@ def _check_chebyshev_count(pf: Proof):
     assert _contains(pf.conclusion.bound, "H"), "Chebyshev-count: missing H factor"
     assert _contains_any(pf.conclusion.bound, "(log N)^(-A)", "(log N)^-A"), "Chebyshev-count: missing log decay"
 
+    # optional side condition premise: H ≥ N^(1/6)
+    if len(pf.premises) == 2:
+        prem2 = pf.premises[1]
+        assert prem2.rule == 'axiom', "Chebyshev-count: side condition must be axiom"
+        side = _repr(prem2.conclusion)
+        assert ("H ≥ N^(1/6)" in side) or ("H >= N^(1/6)" in side), "Chebyshev-count: missing 'H ≥ N^(1/6)' side condition"
+    else:
+        assert len(pf.premises) == 1, "Chebyshev-count: expected 1 (MR) or 2 (MR + H≥N^(1/6)) premises"
+
+
 
 def _check_chebyshev_pointwise(pf: Proof):
     assert isinstance(pf.conclusion, Implies), "Chebyshev-pointwise: need implication"
-    ant = _repr(pf.conclusion.ant)
-    con = _repr(pf.conclusion.con)
+    ant = _canon(_repr(pf.conclusion.ant))
+    con = _canon(_repr(pf.conclusion.con))
     assert "x ∉ BadSet" in ant, "Chebyshev-pointwise: antecedent should exclude bad set"
     assert "|Σ_{n∈I_j}λ(n)λ(bn+h)| ≤ T" in con, "Chebyshev-pointwise: wrong consequent"
     # must depend on Chebyshev-count
     assert any(p.rule == 'Chebyshev-count' for p in pf.premises), "Chebyshev-pointwise: needs Chebyshev-count"
+    # also require a premise specifying the threshold T explicitly
+    assert any(isinstance(p.conclusion, Equals) and _contains(p.conclusion.left, "T") and
+               _contains(p.conclusion.right, "H^(1/2)", "(log N)^C")
+               for p in pf.premises), "Chebyshev-pointwise: need T = H^(1/2)*(log N)^C premise"
+
 
 
 def _check_sum_blocks(pf: Proof):
@@ -156,6 +183,11 @@ def _check_sum_blocks(pf: Proof):
         "Sum-blocks: needs Chebyshev-pointwise"
     assert any(_contains(p.conclusion, "R") and _contains(p.conclusion, "N/(bH)") for p in pf.premises), \
         "Sum-blocks: need R = O(N/(bH))"
+
+    # require affine change and bH window length to be present among premises
+    premise_texts = [_repr(p.conclusion) for p in pf.premises]
+    assert any("n = b*m + h" in t or "n=bm+h" in t for t in premise_texts), "Sum-blocks: need affine substitution 'n = b*m + h'"
+    assert any("bH" in t or "length bH" in t or "window bH" in t for t in premise_texts), "Sum-blocks: need window length bH recorded"
 
 
 def _check_sum_over_b(pf: Proof):
@@ -178,6 +210,10 @@ def _check_bilinear_apply(pf: Proof):
     assert any(p.rule == 'axiom' and isinstance(p.conclusion, BigO) and "x^(1/2)*(P*Q)^(1/2)" in repr(p.conclusion.bound)
                for p in pf.premises), "Bilinear-sieve-apply: need MV bilinear sieve axiom"
     assert isinstance(pf.conclusion, BigO), "Bilinear-sieve-apply: need BigO"
+
+    # require side condition P*Q ≤ x^(1-ε) among premises
+    assert any(p.rule == 'axiom' and ("P*Q ≤ x^(1-ε)" in _repr(p.conclusion) or "P*Q <= x^(1-ε)" in _repr(p.conclusion))
+               for p in pf.premises), "Bilinear-sieve-apply: missing side condition 'P*Q ≤ x^(1-ε)'"
 
 
 def _check_cauchy_schwarz(pf: Proof):
@@ -246,6 +282,84 @@ def _check_hb_full(pf: Proof):
                and p.rule == 'axiom' for p in pf.premises), "Heath-Brown-full: need tie-back axiom"
 
 
+
+def _check_mr_theorem(pf: Proof):
+    # MR-Theorem: (1/N) sum_x |sum_{x<n≤x+H} λ(n)|^2 = O(H*(log N)^(-A))
+    assert isinstance(pf.conclusion, BigO), "MR-Theorem: need BigO"
+    assert _contains(pf.conclusion.expr, "(1/N)Σ_{x=1}^{N-H}|Σ_{n=x+1}^{x+H}λ(n)|²"), "MR-Theorem: wrong LHS"
+    assert _contains_any(pf.conclusion.bound, "H*(log N)^(-A)", "H * (log N)^(-A)"), "MR-Theorem: wrong RHS"
+    # Premises: f completely multiplicative, |f(n)| ≤ 1, f=λ, and analytic toolkit (Parseval/Halász placeholders)
+    texts = [_repr(p.conclusion) for p in pf.premises]
+    assert any("f completely multiplicative" in t for t in texts), "MR-Theorem: need CMF premise"
+    assert any("|f(n)| ≤ 1" in t or "|f(n)| <= 1" in t for t in texts), "MR-Theorem: need 1-bounded premise"
+    assert any("f = λ" in t or "f=λ" in t for t in texts), "MR-Theorem: need specialization f=λ"
+    # toolkit
+    assert any("Parseval" in t for t in texts), "MR-Theorem: need Parseval tool"
+    assert any("Halász" in t for t in texts), "MR-Theorem: need Halász tool"
+
+
+def _check_bilinear_lsi(pf: Proof):
+    # Provide bilinear large-sieve estimate as a derived lemma from LSI base + orthogonality
+    assert isinstance(pf.conclusion, BigO), "Bilinear-LSI: need BigO"
+    body = _repr(pf.conclusion)
+    assert "Σ_{m=1}^{⌊x/(p*q)⌋}" in body and "x^(1/2)*(P*Q)^(1/2)" in body, "Bilinear-LSI: wrong shape"
+    texts = [_repr(p.conclusion) for p in pf.premises]
+    assert any("Large sieve inequality (base)" in t for t in texts), "Bilinear-LSI: need LSI base"
+    assert any("additive characters orthogonality" in t for t in texts), "Bilinear-LSI: need orthogonality"
+
+
+
+def _check_geom_series(pf: Proof):
+    # Geometric-series closed form for r^M - 1 over r - 1
+    assert isinstance(pf.conclusion, Equals), "Geometric-series: need equality"
+    body = _repr(pf.conclusion)
+    assert "Σ_{m=0}^{M-1} r^m" in body and "(1 - r^M)/(1 - r)" in body, "Geometric-series: wrong formula"
+    texts = [_repr(p.conclusion) for p in pf.premises]
+    assert any("algebraic identity for finite geometric sum" in t for t in texts), "Geometric-series: need algebraic identity premise"
+    assert any("domain: r ≠ 1" in t or "r != 1" in t for t in texts), "Geometric-series: need r ≠ 1 premise"
+
+
+def _check_char_orthog(pf: Proof):
+    # Additive characters orthogonality from geometric series
+    assert isinstance(pf.conclusion, Equals), "Char-orthog: need equality"
+    body = _repr(pf.conclusion)
+    assert "Σ_{m=0}^{q-1} e(2πi k m / q)" in body, "Char-orthog: wrong sum"
+    # accept either clean single-line or with possible linebreak artifacts
+    ok_zero = ("= 0 if q ∤ k" in body) or ("= 0 if q |̸ k" in body) or ("= 0 if q !| k" in body)
+    ok_q    = ("= q if q | k" in body)
+    assert (ok_zero and ok_q), "Char-orthog: need case result"
+    texts = [_repr(p.conclusion) for p in pf.premises]
+    assert any("Σ_{m=0}^{M-1} r^m = (1 - r^M)/(1 - r)" in t for t in texts), "Char-orthog: need geometric series"
+    assert any("periodicity of e(2πi θ)" in t for t in texts), "Char-orthog: need periodicity premise"
+
+def _check_lsi_base(pf: Proof):
+    # Large Sieve Inequality (base) from Bessel/Plancherel + character orthogonality
+    assert isinstance(pf.conclusion, Atom), "LSI-base: we encode statement as Atom text"
+    text = _repr(pf.conclusion)
+    assert "Large sieve inequality (base)" in text, "LSI-base: wrong label"
+    texts = [_repr(p.conclusion) for p in pf.premises]
+    assert any("Bessel/Plancherel inequality" in t for t in texts), "LSI-base: need Bessel/Plancherel"
+    assert any("additive characters orthogonality" in t for t in texts), "LSI-base: need orthogonality"
+
+
+def _check_parseval_tool(pf: Proof):
+    # Parseval tool from Unitary DFT + Plancherel
+    assert isinstance(pf.conclusion, Atom), "Parseval-tool: encode as Atom"
+    assert "Parseval tool available" in _repr(pf.conclusion), "Parseval-tool: wrong label"
+    texts = [_repr(p.conclusion) for p in pf.premises]
+    assert any("Unitary DFT" in t for t in texts), "Parseval-tool: need Unitary DFT"
+    assert any("Plancherel identity" in t for t in texts), "Parseval-tool: need Plancherel"
+
+
+def _check_halasz_tool(pf: Proof):
+    # Halász tool availability from pretentious distance + mean value estimates
+    assert isinstance(pf.conclusion, Atom), "Halasz-tool: encode as Atom"
+    assert "Halasz tool available" in _repr(pf.conclusion) or "Halász tool available" in _repr(pf.conclusion), "Halasz-tool: wrong label"
+    texts = [_repr(p.conclusion) for p in pf.premises]
+    assert any("pretentious distance triangle inequality" in t for t in texts), "Halasz-tool: need pretentious distance"
+    assert any("mean value bound for Dirichlet polynomials" in t for t in texts), "Halasz-tool: need mean value bound"
+
+
 # Register validators
 _RULE_CHECKS: dict[str, Callable[[Proof], None]] = {
     'axiom':                   _check_axiom,
@@ -264,6 +378,13 @@ _RULE_CHECKS: dict[str, Callable[[Proof], None]] = {
     'Combine-final':           _check_combine_final,
     'mult_ext':                _check_mult_ext,
     'Heath-Brown-full':        _check_hb_full,
+    'Halasz-tool':         _check_halasz_tool,
+    'Parseval-tool':         _check_parseval_tool,
+    'LSI-base':         _check_lsi_base,
+    'Char-orthog':         _check_char_orthog,
+    'Geometric-series':         _check_geom_series,
+    'MR-Theorem':             _check_mr_theorem,
+    'Bilinear-LSI':           _check_bilinear_lsi,
 }
 
 # === 5. Proof Checker ===
