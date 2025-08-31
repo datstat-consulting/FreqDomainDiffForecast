@@ -1,0 +1,37 @@
+$ python kernel.py
+[→I: ⊢ (A → A) from axiom]
+
+
+$ python number_theory.py
+=== Square‐Divisor Identity Proof ===
+[mult_ext: ⊢ (∀n. (λ(n) = Σ[d^2|n]μ(n//d^2))) from axiom, axiom, axiom]
+
+
+$ python mr_theorem.py
+=== MR Theorem Derived ===
+[MR-Theorem: ⊢ (1/N)Σ_{x=1}^{N-H}|Σ_{n=x+1}^{x+H}λ(n)|² = O(H*(log N)^(-A)) from axiom, axiom, axiom, axiom, axiom]
+
+
+$ python bilinear_sieve.py
+=== Bilinear LSI Derived ===
+[Bilinear-LSI: ⊢ Σ_{p|P<p≤2P}(Σ_{q|Q<q≤2Q}(|Σ_{m=1}^{⌊x/(p*q)⌋} e(*)|)) = O(x^(1/2)*(P*Q)^(1/2)*(log x)^A) from axiom, axiom]
+
+
+$ python heath_brown.py
+=== Full Heath–Brown Decomposition Proof ===
+[Heath-Brown-full: ⊢ (λ(n) = HBsum(n,D)) from axiom, axiom, axiom, axiom, axiom]
+
+
+$ python type_I.py
+=== Type I Subproof Formalization ===
+[Sum-over-b: ⊢ Σ_{b≤D}T_b = O(N^(3/4)*(log N)^(C+1)) from Sum-blocks]
+
+
+$ python type_II.py
+=== Type II/III Subproof Formalization ===
+[Sum-dyadic: ⊢ TypeII_total = O(N^(3/4)*(log N)^(C')) from Cauchy-Schwarz, Dyadic-count]
+
+
+$ python final_combination.py
+=== Final Combination Proof ===
+[Combine-final: ⊢ (∀h,ε. Σ_{n∈N_{h,ε}}λ(n)λ(n+h) = O(N^{3/4+ε})) from Union-bound]

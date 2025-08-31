@@ -1,0 +1,4 @@
+- Added explicit T definition axiom to type_I.py and passed into Chebyshev-pointwise.
+- Kernel now normalizes notation: ^{..} -> ^(..), log(N) -> log N; validators use canonical form.
+- Chebyshev-pointwise validator requires T = H^(1/2)*(log N)^C premise.
+- All scripts re-run successfully.

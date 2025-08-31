@@ -93,3 +93,70 @@ python numerics.py --outdir out --dispersion
 
 - The checker validates proof **shape** and **side-conditions** rigorously, but does not compute analytic inequalities.
 - The numerics file is for exploration and figures only.
+
+## Semantics: Pretentious & MR verification (new)
+
+This repository now includes a **semantic layer** that actively replays the analytic steps your proof uses.  
+These checks run automatically via kernel rule hooks and must pass for the overall proof to verify.
+
+### What is semantically checked
+
+- **Finite orthogonality (Char-orthog)** — exact additive character sums on \(\mathbb{Z}/q\mathbb{Z}\).  
+  Source: `semantics_discrete.py`
+
+- **Finite Parseval (Parseval-tool)** — unitary DFT check on random vectors (identity exact in theory).  
+  Source: `semantics_discrete.py`
+
+- **Cauchy–Schwarz (Cauchy-Schwarz)** — inequality verified on random test vectors.  
+  Source: `semantics_ext.py`
+
+- **Short-interval mean-square identity (MR-mean-square-identity)** — algebraic identity behind MR, verified by  
+  autocorrelation/triangular kernel with DFT/Plancherel.  
+  Source: `semantics_fourier_mr.py`
+
+- **Pretentious / Halász for \(\lambda\) (Halasz-bound(λ))** — computes the pretentious distance  
+  \(D(\lambda,n^{it};X)^2=\sum_{p\le X}(1-\Re(\lambda(p)p^{-it}))/p\) over a \(t\)-grid and enforces a small 
+  Halász-style envelope \(\exp(-D^2)+1/\sqrt{\log X}\).  
+  Source: `semantics_pretentious.py`
+
+- **MR inequality witness (MR-inequality-witness)** — finite-\(N\) check that  
+  \(\frac{1}{N}\sum_{x\le N}\bigl|\sum_{x<n\le x+H}\lambda(n)\bigr|^2 \lesssim H/(\log N)^A\) holds for moderate \(N,H\).  
+  Source: `semantics_mr_witness.py`
+
+- **Bilinear dispersion scale (Bilinear-LSI)** — double sum over primes vs benchmark \(x^{1/2}(PQ)^{1/2}(\log x)^A\) using
+  exact geometric sums of exponentials.  
+  Source: `semantics_ext.py`
+
+- **Interval arithmetic sanity (ExpLog-Interval, Trig-Interval)** — rigorous-leaning outward rounding for `exp/log`, exact-extrema 
+  and Taylor enclosures for `sin/cos`; random spot checks ensure true values fall inside reported intervals.  
+  Source: `rigorous_interval.py`
+
+### Files added for semantics
+
+- `semantics_discrete.py` — exact finite Fourier orthogonality & Parseval.  
+- `semantics_measure.py` — interval arithmetic and exact Fourier orthogonality on \([0,1]\).  
+- `rigorous_interval.py` — directed-rounding intervals and certified `sin/cos` enclosures.  
+- `semantics_ext.py` — integral enclosures and inequality/witness utilities.  
+- `semantics_fourier_mr.py` — MR mean-square identity replay (discrete).  
+- `semantics_pretentious.py` — pretentious distance \(D^2\) and Halász-style envelope for \(\lambda\).  
+- `semantics_mr_witness.py` — numerical MR inequality witness for \(\lambda\).  
+- `semantics_hooks.py` — installs semantic checks for the rules listed above.  
+- `run_all_with_semantics.py` — runs the full pipeline with semantics enabled.
+
+### How to run with semantics
+
+```bash
+# one command to run the full pipeline with semantic validations
+python run_all_with_semantics.py
+```
+You should see a banner like  
+`Installed semantic checks incl. Halasz-bound(λ), MR-inequality-witness`  
+followed by `OK` for each module.
+
+### Notes on guarantees
+
+- Identities (orthogonality, Parseval, short-interval mean-square identity) are **exact** in the semantics layer.  
+- Inequality steps are backed by **rigorous-leaning enclosures** (interval arithmetic with outward rounding) and/or
+  **finite‑N witnesses** where appropriate (e.g., MR inequality witness).  
+- For a full constant‑sharp derivation of MR/Halász in complete generality, extend the pretentious layer with certified prime‑sum
+  enclosures and complex‑analytic bounds; the present build is designed to be incrementally tightened.

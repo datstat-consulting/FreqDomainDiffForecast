@@ -1,0 +1,55 @@
+--- kernel.py (before)
++++ kernel.py (after)
+@@ -110,13 +110,25 @@
+ def _repr(form):
+     return repr(form)
+ 
++def _canon(s: str) -> str:
++    # Normalize some math notations to avoid harmless mismatches
++    if s is None:
++        return s
++    # unify ^{..} to ^(..)
++    s = re.sub(r"\^\{([^}]+)\}", r"^(\\1)", s)
++    # unify log(N) -> log N
++    s = s.replace("log(N)", "log N")
++    # collapse multiple spaces
++    s = re.sub(r"\s+", " ", s).strip()
++    return s
++
+ def _contains(form, *needles):
+-    text = _repr(form)
+-    return all(n in text for n in needles)
++    text = _canon(_repr(form))
++    return all(_canon(n) in text for n in needles)
+ 
+ def _contains_any(form, *needles):
+-    text = _repr(form)
+-    return any(n in text for n in needles)
++    text = _canon(_repr(form))
++    return any(_canon(n) in text for n in needles)
+ 
+ 
+ def _check_chebyshev_count(pf: Proof):
+@@ -141,14 +153,20 @@
+         assert len(pf.premises) == 1, "Chebyshev-count: expected 1 (MR) or 2 (MR + H≥N^(1/6)) premises"
+ 
+ 
++
+ def _check_chebyshev_pointwise(pf: Proof):
+     assert isinstance(pf.conclusion, Implies), "Chebyshev-pointwise: need implication"
+-    ant = _repr(pf.conclusion.ant)
+-    con = _repr(pf.conclusion.con)
++    ant = _canon(_repr(pf.conclusion.ant))
++    con = _canon(_repr(pf.conclusion.con))
+     assert "x ∉ BadSet" in ant, "Chebyshev-pointwise: antecedent should exclude bad set"
+     assert "|Σ_{n∈I_j}λ(n)λ(bn+h)| ≤ T" in con, "Chebyshev-pointwise: wrong consequent"
+     # must depend on Chebyshev-count
+     assert any(p.rule == 'Chebyshev-count' for p in pf.premises), "Chebyshev-pointwise: needs Chebyshev-count"
++    # also require a premise specifying the threshold T explicitly
++    assert any(isinstance(p.conclusion, Equals) and _contains(p.conclusion.left, "T") and
++               _contains(p.conclusion.right, "H^(1/2)", "(log N)^C")
++               for p in pf.premises), "Chebyshev-pointwise: need T = H^(1/2)*(log N)^C premise"
++
+ 
+ 
+ def _check_sum_blocks(pf: Proof):
